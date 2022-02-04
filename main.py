@@ -16,6 +16,43 @@ import json
 
 KV = '''
 #: import gch kivy.utils.get_color_from_hex
+<DropListItem>
+    orientation: "vertical"
+    size_hint_x: None
+    width: dp(200)
+    MDBoxLayout
+        padding: [dp(5),]
+        spacing: dp(7)
+        FitImage:
+            size_hint: None, None
+            height: dp(30)
+            width: dp(30) + dp(30/4)
+            source: root.icon
+
+        MDLabel:
+            text: root.text1
+            size_hint_y: None
+            height: self.parent.height
+            markup: True
+            shorten: True
+            shorten_from: 'right'
+            font_style: "Caption"
+            font_size: dp(13)
+            valign: "center"
+            pos_hint: {"center_y": .5}
+
+        MDLabel:
+            text: root.text2
+            size_hint_y: None
+            height: self.parent.height
+            markup: True
+            font_style: "Caption"
+            font_size: dp(15)
+            valign: "center"
+            halign: "right"
+            pos_hint: {"center_y": .5}
+    MDSeparator:
+
 <CustomDropDownItem>:
     y: self.parent.height - self.height - dp(130)
     on_release:
@@ -67,6 +104,8 @@ KV = '''
         font_style: "Icon"
         font_size: dp(20)
         halign: "right"
+        size_hint_x: None
+        width: dp(30)
         pos_hint: {"center_y": .5}
 
 
@@ -76,12 +115,12 @@ KV = '''
     RelativeLayout:
 
         MDToolbar:
-            title: 'Numeric Keyboard Implementation'
+            title: 'Country Code Picker Implementation'
             elevation: 10
             y: self.parent.height - self.height
 
         MDLabel:
-            text: 'Number TextField'
+            text: 'Country Code Picker and Number Field'
             font_size: 15
             y: self.parent.height - self.height - dp(90)
             pos_hint :{'center_x':0.5}
@@ -90,14 +129,18 @@ KV = '''
             height: dp(20)
 
         MDBoxLayout:
+            y: self.parent.height - self.height - dp(120)
             padding: [dp(20), dp(10), dp(20), dp(10)]
+            orientation: 'vertical'
+            size_hint_y: None
+            height: dp(150)
+            spacing: dp(20)
 
             CustomDropDownItem:
-                y: self.parent.height - self.height - dp(130)
-
+                size_hint_x: 0.83
+                pos_hint: {"center_x": .5}
 
             MDTextField
-                y: self.parent.height - self.height - dp(170)
                 id : reg_tel_number
                 hint_text: "Mobile Number"
                 mode: "rectangle"
@@ -110,6 +153,8 @@ KV = '''
                 current_hint_text_color: gch("#ffd470")
                 line_color_focus: gch("#ffd470")
                 on_focus: root.set_layout(keyboard_anchor, self)
+                size_hint_x: 0.8
+                pos_hint: {"center_x": .5}
 
         RelativeLayout:
             id: keyboard_anchor
@@ -120,6 +165,11 @@ WindowManager:
     CountryCodePicker:
         id: ccp_screen
 '''
+
+class DropListItem(RectangularRippleBehavior, ButtonBehavior, MDBoxLayout):
+    icon = StringProperty()
+    text1 = StringProperty()
+    text2 = StringProperty()
 
 class WindowManager(ScreenManager):
     pass
@@ -143,7 +193,6 @@ class CustomDropDownItem(RoundedRectangularElevationBehavior, RectangularRippleB
             }
             for x in menu_items
         ]
-        print(self)
         dropdown_item = self
         self.menu = MDDropdownMenu(
             caller=dropdown_item,
@@ -154,14 +203,14 @@ class CustomDropDownItem(RoundedRectangularElevationBehavior, RectangularRippleB
         self.menu.bind(on_release=self.set_item)
 
     def set_item(self, value_items):
-        self.root.ids.register_screen.ids.select_country_button_flag.icon = "chevron-right-circle"
+        self.ids.select_country_button_flag.icon = "chevron-right-circle"
         value_items = value_items.split(" ")
         flag = value_items[0]
         country_name = value_items[1]
         dial_code = value_items[-1]
         self.ids.select_country_button_flag.source = flag
         self.ids.select_country_button_text.text = country_name + " " + dial_code
-        self.ids.dropdown_item.current_item = dial_code
+        self.current_item = dial_code
         self.menu.dismiss()
 
 class CountryCodePicker(MDScreen):
@@ -180,7 +229,7 @@ class CountryCodePicker(MDScreen):
 
 class NumericKeyboard(VKeyboard):
     text_field = ObjectProperty()
-    custom_vk_layout = ObjectProperty('numeric.json')
+    custom_vk_layout = ObjectProperty('assets/docs/numeric.json')
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
