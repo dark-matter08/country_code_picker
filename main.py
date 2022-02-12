@@ -66,6 +66,7 @@ KV = '''
     md_bg_color: gch("#ffd470")
     radius: [dp(6),]
     padding: [dp(10), dp(9)]
+    spacing: dp(10)
 
     canvas.before:
         Color:
@@ -84,8 +85,24 @@ KV = '''
 
     MDLabel:
         id: select_country_button_text
-        text: 'Cameroon +237'
+        text: 'Cameroon'
         size_hint_y: None
+        height: self.parent.height
+        markup: True
+        shorten: True
+        shorten_from: 'right'
+        font_style: "Caption"
+        font_size: dp(15)
+        valign: "center"
+        halign: "left"
+        pos_hint: {"center_y": .5}
+
+    MDLabel:
+        id: dial_code
+        text: '+237'
+        size_hint_y: None
+        size_hint_x: None
+        width: dp(60)
         height: self.parent.height
         markup: True
         shorten: True
@@ -206,10 +223,12 @@ class CustomDropDownItem(RoundedRectangularElevationBehavior, RectangularRippleB
         self.ids.select_country_button_flag.icon = "chevron-right-circle"
         value_items = value_items.split(" ")
         flag = value_items[0]
-        country_name = value_items[1]
+        country_name = value_items[1:-1]
+        country_name = " ".join([str(item) for item in country_name])
         dial_code = value_items[-1]
         self.ids.select_country_button_flag.source = flag
-        self.ids.select_country_button_text.text = country_name + " " + dial_code
+        self.ids.select_country_button_text.text = country_name
+        self.ids.dial_code.text = dial_code
         self.current_item = dial_code
         self.menu.dismiss()
 
